@@ -9,5 +9,4 @@ except ValueError as e:
     print(e)
     exit()
 
-txt = txt[::-1].lower().capitalize()
-print(txt)
+print(f"Your Sentence has been reversed: {txt[::-1].lower().capitalize()}")

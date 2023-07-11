@@ -1,1 +1,1 @@
-# Uzrakstīt programmu teksta simbola atpazīšanai
+# Uzrakstīt programmu teksta simbola atpazīšanai ??? STUB

@@ -9,23 +9,71 @@
 # 3) All other live cells die in the next generation. Similarly, all other dead cells stay dead.
 
 # STUB testing pygame
+import argparse
 import pygame
+import numpy as np
+import time
 
-pygame.init()
+col_bg = (0, 0, 0)
+col_grid = (50, 50, 50)
+col_alive = (255, 255, 255)
+col_dead = (175, 175, 175)
+#####################################
+#   All Values are pixels           #
+#####################################
+W = 64      #    Widht of the Window 
+H = 48      #    Height of the Window
+K = 10      #    Constant for changing the window size
+CS = 10      #    The Cell size scaled to the window size.
 
-screen = pygame.display.set_mode([500, 500])
+def update_frame(window, cur):
+    frame = np.zeros((cur.shape[0], cur.shape[1]))
+    for row, col in np.ndindex(cur.shape):
+        num_alive = np.sum(cur[row-1:row+2, col-1:col+2]) - cur[row, col]
+        
+        if (cur[row, col] == 1 and num_alive < 2 or num_alive > 3):
+            c = col_dead
+        elif ((cur[row, col] == 1 and  2 <= num_alive <= 3) or (cur[row, col] == 0 and num_alive == 3)):
+            frame[row, col] = 1
+            c = col_alive
+        
+        c = c if cur[row, col] == 1 else col_bg
+        pygame.draw.rect(window, c, (col*CS, row*CS, CS-1, CS-1))
+        
+    return frame
 
-running = True
+def init(width, height):
+    cells = np.zeros((width, height))
+    pattern = np.array([[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0],
+                        [1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]);
+    pos = (3, 3)
+    cells[pos[0]:pos[0]+pattern.shape[0], pos[1]:pos[1]+pattern.shape[1]] = pattern
+    return cells
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running == False
-    
-    screen.fill((255, 255, 255))
+def main():
+    parse = argparse.ArgumentParser(description="Implementation of Conway's Game of Life")
 
-    pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+    pygame.init()
+    window = pygame.display.set_mode(((W*K), (H*K)))
+    pygame.display.set_caption("Conway's Game of Life")
 
-    pygame.display.flip()
+    cells = init(W, H)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+            window.fill(col_grid)
+            cells = update_frame(window, cells)
+            pygame.display.update()
+            time.sleep(0.1)
 
-pygame.quit()
+if (__name__ == "__main__"):
+    main()

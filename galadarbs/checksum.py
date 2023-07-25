@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse as pa
+import argparse 
 import hashlib
 
 def is_checksum(user_checksum, file_checksum):
@@ -21,7 +21,7 @@ def get_checksum(filename, hash_type='md5'):
 
 
 def main():
-    parser = pa.ArgumentParser(
+    parser = argparse.ArgumentParser(
         prog='Checksum',
         description='Checks if a files checksum matches the vendors checksum.',
         epilog='Usage: checksum.py -f [filename] -t [checksum type] -u [checksum]')
